@@ -11,8 +11,9 @@ Each week we will discuss a specific topic and dive into real data. The reposito
     * matrices as affine functions
     * geometrical perspective
 2. Statistical signal/image processing
-    * filtering & fourier analysis
-    * convolution 
+    * fourier analysis & filtering
+    * wavelets vs. spectrograms
+    * convolution vs. correlation
     * auto-correlations and auto-regression
     * event detection / shift detection
     * time-series decomposition
@@ -35,6 +36,10 @@ Each week we will discuss a specific topic and dive into real data. The reposito
     * linear, multiple regression
     * logistic regression
     * regularization
+7. curve fitting
+    * linear, polynomial, exponential
+    * splines 
+    * spline regression
 7. Parametric and non-parametric statistics
     * bootstrapping / sampling
     * density estimation
