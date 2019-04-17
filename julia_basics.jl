@@ -3,8 +3,8 @@
 ##### Arrays / Matrices #####
 # 3 ways to build an array
 x = Array(1:10)
-x = [1 2 3 4 5 6 7 8 9 10]
-x = Array(range(1, stop=10, 10))
+x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+x = Array(range(1, stop=10, length=10))
 
 # indexing
 x[4]
@@ -16,7 +16,7 @@ mask = (x % 2 == 0)
 print(x[mask])
 
 # indexing with another vector
-x[[5,7]] = x[[7,5]] # swapped places 
+x[[5,7]] = x[[7,5]] # swapped places
 
 # we can do multiple comparisons on the same Line
 1 < 2 < 3 < 5 # true; MATLAB equivalent: (1 < 2) & (2 < 3) & (3 < 5)
@@ -31,7 +31,6 @@ fill!(A, 10) # fill A with all 10s
 noise = randn(1, 5)
 A + noise # adds the row-vector "noise" to each row of A
 broadcast(+, A, noise) # same as above
-
 
 
 ##### LOOPS #####
@@ -65,7 +64,6 @@ y = [i for i in 1:100 if i % 2 == 0]
 #   end
 
 ysq = [i^2 for i in y] # could just do ysq = y.^2, but you get the picture
-
 
 
 ##### Julia Specifics #####
