@@ -78,3 +78,23 @@ plot!(view(dataxy, :, 1), view(dataxy, :, 2), seriestype=:scatter,
 # the linear matrices "A"" are performing linear functions on the columns of "data"
 f_xy(data) = hcat(0.3data[:,1] + 0.1data[:,2], 0.5data[:,1] - 0.6data[:,2])
 isapprox(dataxy, f_xy(data))
+
+
+### MATRIX RANKS
+# rank of a matrix determines how "complex" it is (how many independent columns)
+x = rand(10, 5)
+LinearAlgebra.rank(x)
+
+# here we are just copying the same vector and scaling it by a constant,
+# so each column can be described by a single column
+x = rand(10) * [1 2 3 4 5] # this is an outer product
+LinearAlgebra.rank(x)
+
+# let's observe different rank matrices, and see how they get combined into something
+# that looks complex (this is at the heart of dimensionality reduction techniques like PCA)
+A = zeros(10, 10)
+heatmap(A)
+for i in 1:3
+    A += rand(10) * randn(1,10)
+    heatmap!(A)
+    sleep(1)
