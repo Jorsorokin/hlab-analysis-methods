@@ -4,8 +4,6 @@ using Statistics, Plots
 
 ### DATA SCALING
 # visualizing different transforms
-y = 10;
-
 x = randn(100)
 y = randn(100)*4
 plot(x, y, seriestype=:scatter, xlim=[-10, 10], ylim=[-10, 10])
@@ -100,7 +98,6 @@ y2 = sin.(x)
 y3 = cosc.(x)
 
 l = @layout [a b c; d e f; g]
-heatmap(A)
 A1 = y1 * rand(1,10)
 A2 = y2 * rand(1,10)
 A3 = y3 * rand(1,10)
