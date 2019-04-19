@@ -92,9 +92,22 @@ LinearAlgebra.rank(x)
 
 # let's observe different rank matrices, and see how they get combined into something
 # that looks complex (this is at the heart of dimensionality reduction techniques like PCA)
-A = zeros(10, 10)
-heatmap(A)
-for i in 1:3
-    A += rand(10) * randn(1,10)
-    heatmap!(A)
-    sleep(1)
+x = range(0,stop=6,length=100)
+y1 = cos.(x)
+y2 = sin.(x)
+y3 = cosc.(x)
+
+l = @layout [a b c; d e f; g]
+A1 = y1 * rand(1,10)
+A2 = y2 * rand(1,10)
+A3 = y3 * rand(1,10)
+A = A1 + A2 + A3
+
+p1 = plot(y1, label="")
+p2 = plot(y2, label="")
+p3 = plot(y3, label="")
+p4 = heatmap(A1)
+p5 = heatmap(A2)
+p6 = heatmap(A3)
+p7 = heatmap(A)
+plot(p1, p2, p3, p4, p5, p6, p7, layout=l)
