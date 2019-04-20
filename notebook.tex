@@ -280,16 +280,16 @@
     
 
     
-    \hypertarget{hlab-analysis-methods-pdf-summary}{%
-\subsubsection{Hlab analysis methods PDF
-summary}\label{hlab-analysis-methods-pdf-summary}}
+    \hypertarget{hlab-analysis-methods-handbook}{%
+\section{Hlab analysis methods
+handbook}\label{hlab-analysis-methods-handbook}}
 
 Welcome! This rather lengthy document summarizes the various topics we
 will/have covered in the HLab analysis mini series. If this is the
 .ipynb version of the doc, you can edit/run blocks of code yourself.
 
-\hypertarget{table-of-contents}{%
-\section{Table of contents}\label{table-of-contents}}
+    \hypertarget{table-of-contents}{%
+\subsection{Table of contents}\label{table-of-contents}}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -298,41 +298,372 @@ will/have covered in the HLab analysis mini series. If this is the
 \item
   Section \ref{basics}
 \item
-  Section \ref{linalg}
+  Section \ref{linalg} 1.1 Section \ref{inner} 1.2 Section \ref{outer}
+  1.3 Section \ref{norm} 1.4 Section \ref{rank}
 \item
   Section \ref{sigproc}
 \end{enumerate}
 
     \hypertarget{basic-setup}{%
-\subsection{Basic Setup }\label{basic-setup}}
+\section{0: Basic Setup }\label{basic-setup}}
 
 If you are new to Julia, fear not, it is quite similar to MATLAB. There
 are, however a few peculiarities to take care of. First, in Julia we
-need to \emph{import} packages to use certain functions. For instan,
-there is no plotting function built in, but there is a handy
-\emph{Plots} function that we can use. In order to use these, we first
-need to (a) install the packages, and (b) import them when we wish to
-use them.
+need to \emph{import} packages to use certain functions. For instance,
+there are no built-in plotting functions, but there is a handy
+\emph{Plots} package that we can install and use. In general, to
+increase the flexibility of Julia we first need to (a) install desired
+packages, and (b) import them when we wish to use them.
 
-We will need to install at least a few additional packages to get up to
-speed. If you haven't already, in an active Julia session type the
-following commands to get plotting, statistics, and tabular-based data
-structures available for use
+For the most part, Julia code will look very familiar if you have
+learned Python and/or MATLAB (it uses the best of both worlds: MATLAB's
+intuitive linear algebra framework with Python's general-purposeness \&
+modularity). Plotting is a bit different, as are some of the data
+structures (for instance, a row-vector does not behave the same as a
+column-vector, but we'll get into that next)
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{using Pkg }\CommentTok{# allows us to add new packages}
-\NormalTok{Pkg.add(}\StringTok{"Plots"}\NormalTok{) }\CommentTok{# plotting capabilities}
-\NormalTok{Pkg.add(}\StringTok{"StatsPlots"}\NormalTok{) }\CommentTok{# statsitics-related plotting addons}
-\NormalTok{Pkg.add(}\StringTok{"DataFrames"}\NormalTok{) }\CommentTok{# tabular data frames}
-\end{Highlighting}
-\end{Shaded}
+For now, we will need to install at least a few additional packages to
+get up to speed. If you haven't already, in an active Julia session (or
+in this notebook if you are using it in Jupyter) type the following
+commands to get plotting, statistics, and tabular-based data structures
+available for use:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} \PY{k}{using} \PY{n}{Pkg} \PY{c}{\PYZsh{} allows us to add new packages}
+        \PY{n}{Pkg}\PY{o}{.}\PY{n}{update}\PY{p}{(}\PY{p}{)}
+        \PY{n}{Pkg}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{P}\PY{l+s}{l}\PY{l+s}{o}\PY{l+s}{t}\PY{l+s}{s}\PY{l+s}{\PYZdq{}}\PY{p}{)}      \PY{c}{\PYZsh{} plotting capabilities}
+        \PY{n}{Pkg}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{S}\PY{l+s}{t}\PY{l+s}{a}\PY{l+s}{t}\PY{l+s}{s}\PY{l+s}{P}\PY{l+s}{l}\PY{l+s}{o}\PY{l+s}{t}\PY{l+s}{s}\PY{l+s}{\PYZdq{}}\PY{p}{)} \PY{c}{\PYZsh{} statsitics\PYZhy{}related plotting add ons }
+        \PY{n}{Pkg}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{D}\PY{l+s}{a}\PY{l+s}{t}\PY{l+s}{a}\PY{l+s}{F}\PY{l+s}{r}\PY{l+s}{a}\PY{l+s}{m}\PY{l+s}{e}\PY{l+s}{s}\PY{l+s}{\PYZdq{}}\PY{p}{)} \PY{c}{\PYZsh{} tabular data structures}
+\end{Verbatim}
+
+
+    We can use these packages once installed via the
+\texttt{using\ \_\_package\_name\_\_} command, which imports all the
+functions available from that particular package. Contrastingly,
+importing via the \texttt{import\ \_\_package\_name\_\_} imports the
+package, but you have to use dot (.) notation to access the functions.
+
+Personally, I prefer the \texttt{using} command for packages that you
+will almost certainly use throughout your code (for instance the
+\texttt{Plots} package), and the \texttt{import} command for packages
+that will be used more rarely. This can help you keep track of which
+functions stem from which packages, and IMO keeps the code looking
+cleaner.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}10}]:} \PY{k}{using} \PY{n}{Plots}
+         \PY{n}{x} \PY{o}{=} \PY{n}{randn}\PY{p}{(}\PY{l+m+mi}{100}\PY{p}{)}
+         \PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+         
+         \PY{k}{import} \PY{n}{Statistics}
+         \PY{n}{print}\PY{p}{(}\PY{p}{[}\PY{n}{Statistics}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{,} \PY{n}{Statistics}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+[-0.00331494, 1.05387]
+    \end{Verbatim}
 
     \hypertarget{linear-algebra}{%
-\subsection{Linear Algebra }\label{linear-algebra}}
+\section{1: Linear Algebra }\label{linear-algebra}}
+
+Linear algbera is at the core of most (if not all) of the analysis
+methods we will be covering. As such, knowing even a very surface-level
+amount of linear algebra can be extremely rewarding/beneficial when
+creating your analysis pipelines.
+
+Let's begin by creating a simple \emph{vector} in Julia, which is
+defined as a column-vector by default:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} \PY{n}{x} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{,} \PY{l+m+mi}{5}\PY{p}{]} \PY{c}{\PYZsh{} unlike matlab, you must use commas if you want to specify a column vector}
+        \PY{n}{size}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+\end{Verbatim}
+
+
+    We see that our variable \texttt{x} is a 5 x 1 column vector. This is an
+important thing to note, since linear algebra cares about the
+orientation of vectors/matrices. Of course, we can do simple things like
+add/multiply a scalar. We can also add another vector of the same
+length, or multiply by another vector or matrix.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} \PY{n}{y} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{]}
+        \PY{n}{print}\PY{p}{(}\PY{l+m+mi}{2}\PY{n}{x}\PY{p}{)} \PY{c}{\PYZsh{} multiply each element by 2}
+        \PY{n}{print}\PY{p}{(}\PY{n}{x} \PY{o}{.*} \PY{n}{y}\PY{p}{)} \PY{c}{\PYZsh{} element\PYZhy{}wise multiplication}
+        \PY{n}{print}\PY{p}{(}\PY{n}{x}\PY{o}{\PYZsq{}} \PY{o}{*} \PY{n}{y}\PY{p}{)} \PY{c}{\PYZsh{} dot\PYZhy{}product: x[1]*y[1] + ... + x[5]*y[5]}
+\end{Verbatim}
+
+
+    \hypertarget{vector-and-matrix-norms}{%
+\subsubsection{1.1: Vector and matrix norms
+}\label{vector-and-matrix-norms}}
+
+We can make some measurements on vectors and matrices that can come in
+handy for things such as scaling data (useful/necessary for some matrix
+factorization and clustering techniques) and analyzing goodness-of-fit
+for regression problems.
+
+The \emph{norm} of a vector is defined as:
+\[\left|\left|v\right|\right|^{p} = \sum{v_i^p}\]
+
+    \hypertarget{the-inner-product}{%
+\subsubsection{1.1: The inner product }\label{the-inner-product}}
+
+Note that the last operation \texttt{x\textquotesingle{}\ *\ y}
+performed \emph{vector-multiplication} between the vectors \texttt{x}
+and \texttt{y}. This is also called the \emph{dot product} or
+\emph{inner product} between two vectors (or matrices). Note that I had
+to transpose the vector \texttt{x} first for this to work. I also could
+have imported the \texttt{LinearAlgebra} package and used the function
+\texttt{LinearAlgebra.dot(x,\ y)}.
+
+We can write our own dot-product function to clarify what it is doing:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} \PY{n}{dot}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{y}\PY{p}{)} \PY{o}{=} \PY{n}{sum}\PY{p}{(}\PY{p}{[}\PY{n}{i}\PY{o}{*}\PY{n}{j} \PY{k}{for} \PY{n}{i} \PY{k+kp}{in} \PY{n}{x}\PY{p}{,} \PY{k}{for} \PY{n}{j} \PY{k+kp}{in} \PY{n}{y}\PY{p}{]}\PY{p}{)} 
+        \PY{n}{print}\PY{p}{(}\PY{n}{x}\PY{o}{\PYZsq{}} \PY{o}{*} \PY{n}{y}\PY{p}{)}    \PY{c}{\PYZsh{} built\PYZhy{}in dot product}
+        \PY{n}{print}\PY{p}{(}\PY{n}{dot}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{y}\PY{p}{)}\PY{p}{)} \PY{c}{\PYZsh{} homemade dot product}
+\end{Verbatim}
+
+
+    So the inner/dot product is nothing more than summing the resulting
+vector after doing element wise multiplication. If we have a
+matrix-vector product or matrix-matrix product, we simply repeat the
+above procedure for each row/column of the matrices involved.
+
+Inner products depend on a certain order, so if we have two matrices
+\texttt{A} and \texttt{B}, the inner product \texttt{A\ *\ B} is not the
+same as \texttt{B\ *\ A}. The former performs a dot product between each
+\emph{row of A} and each \emph{column of B}, while the latter does the
+opposite.
+
+Inner products are at the core of much of linear algebra, and indeed
+many of the analyses we will cover. It can be interpreted in a variety
+of ways, some of which are more useful than others depending on the
+context:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  A similarity score (clustering)
+\item
+  A projection of one vector/matrix onto another (dim reduction methods,
+  discriminant analysis)
+\item
+  A weighted mixture (demixture) of factors (observations) (factor
+  analysis, PCA)
+\item
+  A weighted sum of predictor variables (regression)
+\item
+  A rotation/scaling of data (variety of signal/image processing
+  methods)
+\item
+  A filter response (signal processing/convolution)
+\item
+  A transformation of \emph{inputs} into \emph{outputs} (variety of
+  topics/methods, such as neural networks)
+\end{enumerate}
+
+I usually find the inner product easiest to think of in terms of (1),
+(3), and/or (4), as these are likely to be encountered in your analysis,
+but it can be useful to visualize/interpret inner products as
+transformations of vectors/variables:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} \PY{c}{\PYZsh{} create a correlated scatter plot}
+        \PY{n}{x} \PY{o}{=} \PY{n}{randn}\PY{p}{(}\PY{l+m+mi}{1000}\PY{p}{)}
+        \PY{n}{y} \PY{o}{=} \PY{l+m+mi}{3}\PY{n}{x} \PY{o}{+} \PY{l+m+mf}{0.5}\PY{o}{*}\PY{n}{randn}\PY{p}{(}\PY{l+m+mi}{1000}\PY{p}{)} 
+        \PY{n}{data} \PY{o}{=} \PY{p}{[}\PY{n}{x}\PY{p}{,} \PY{n}{y}\PY{p}{]}
+        \PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{y}\PY{p}{,} \PY{n}{seriestype}\PY{o}{=}\PY{l+s}{\PYZdq{}}\PY{l+s}{s}\PY{l+s}{c}\PY{l+s}{a}\PY{l+s}{t}\PY{l+s}{t}\PY{l+s}{e}\PY{l+s}{r}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+        
+        \PY{c}{\PYZsh{} now lets flip over the y\PYZhy{}axis using an inner product with a rotation matrix}
+        \PY{n}{A} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{1} \PY{l+m+mi}{0}\PY{p}{;} \PY{l+m+mi}{0} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}
+        \PY{n}{data\PYZus{}filped} \PY{o}{=} \PY{n}{data} \PY{o}{*} \PY{n}{A}
+        \PY{n}{plot!}\PY{p}{(}\PY{n}{data\PYZus{}flipped}\PY{p}{[}\PY{o}{:}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{data\PYZus{}flipped}\PY{p}{[}\PY{o}{:}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{,} \PY{n}{seriestype}\PY{o}{=}\PY{l+s}{\PYZdq{}}\PY{l+s}{s}\PY{l+s}{c}\PY{l+s}{a}\PY{l+s}{t}\PY{l+s}{t}\PY{l+s}{e}\PY{l+s}{r}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    As you can see above, we have used the inner product in a
+\emph{rotation/transformation} setting, where we've flipped our data
+about the y-axis. It is helpful to understand the structure of
+\texttt{A}, and what it is doing to each of our original
+\emph{dimensions} (each column of \texttt{data}). Our rotation matrix
+\texttt{A} contains the values:
+
+\begin{verbatim}
+1  0
+0 -1
+\end{verbatim}
+
+Each \emph{row} of \texttt{A} is associated with one
+dimension/feature/variable of the \emph{input} data, while each
+\emph{column} of \texttt{A} is associated with one
+dimension/feature/variable of the \emph{ouput} data. Since we have two
+columns in \texttt{data}, and two columns in \texttt{A}, we already know
+that this inner product is NOT going to change the dimensionality of the
+data. We started with two variables (x, y), and we will be ending with
+two variables (x\_new, y\_new).
+
+Looking at the \emph{columns} of A, we see that the first column,
+\texttt{{[}1,\ 0{]}}, will be multiplying the \emph{first} variable in
+\texttt{data} (x) by the value \emph{1}, and the \emph{second} variable
+in \texttt{data} (y) by the value \emph{0}, then adding the results
+together to produce \texttt{x\_new}. Since we are not combining
+\texttt{x} and \texttt{y} together (since y is multiplied by 0), and
+since we are only multiplying \texttt{x} by 1, we know that
+\texttt{x\_new\ =\ x}.
+
+Similarly, the second column of \texttt{A}, \texttt{{[}0,\ -1{]}}, will
+be multiplying \texttt{x} by \emph{0}, and \texttt{y} by \emph{-1}, then
+summing the results to produce \texttt{y\_new}. Since the only
+contribution to \texttt{y\_new} is the original \texttt{y} variable in
+\texttt{data}, and it is only multiplied by \emph{-1}, we know that
+\texttt{y\_new\ =\ -y}.
+
+So in general, each \emph{column} of \texttt{A} specifies how the input
+variables get weighted before being summed together to produce a new,
+single, ouput variable. So each column of \texttt{A} is performing a
+\emph{linear combination} of the input variables. We can also readily
+appreciate how we can easily shrink or expand the original
+dimensionality of the data set (by removing or adding columns to
+\texttt{A}, respectively).
+
+    \hypertarget{the-outer-product}{%
+\subsubsection{1.2: The outer product }\label{the-outer-product}}
+
+Unlike the inner product, which typically reduces the \# of elements
+(for instance, from two vectors -\textgreater{} scalar), the outer
+product is an \emph{expansion} of a dataset. You will likely not use an
+outer product as often as you will an inner product, but it has
+important applications, especially relating to dimensionality reduction
+techniques and data reconstruction.
+
+If we have two column vectors \texttt{x} and \texttt{y}, we perform an
+outer product as \texttt{x\ *\ y\textquotesingle{}}. Note that while we
+transposed \texttt{x} for an inner product, here we have transposed
+\texttt{y}. The result is that we take the vector \texttt{x}, and
+multiply all of its elements by each element in \texttt{y}. Basically,
+we are simply copying the vector \texttt{x} many times, and scaling each
+copy depending on the value of each element in \texttt{y}. The result is
+a matrix that just contains scaled copies of \texttt{x}.
+
+It is easer to understand this operation with a quick example:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} \PY{n}{x} \PY{o}{=} \PY{n}{sin}\PY{o}{.}\PY{p}{(}\PY{n}{range}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{stop}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{length}\PY{o}{=}\PY{l+m+mi}{100}\PY{p}{)}\PY{p}{)} \PY{c}{\PYZsh{} sine wave 100 pts long}
+        \PY{n}{w} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mf}{0.5}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{,} \PY{o}{\PYZhy{}}\PY{l+m+mi}{3}\PY{p}{]} \PY{c}{\PYZsh{} weights for each \PYZdq{}copy\PYZdq{} of x}
+        
+        \PY{n}{M} \PY{o}{=} \PY{n}{x} \PY{o}{*} \PY{n}{w}\PY{o}{\PYZsq{}} \PY{c}{\PYZsh{} now this is of size 100 x 5, since x was 100 x 1 and w\PYZsq{} is 1 x 5}
+        \PY{n}{heatmap}\PY{p}{(}\PY{n}{M}\PY{p}{)}
+\end{Verbatim}
+
+
+    As you can see, each column in \texttt{M} is simply \texttt{x} that has
+been scaled according to the corresponding element in \texttt{w}. Even
+though we have 5 columns in \texttt{M}, really each column can be
+represented as the originally sine wave with a scaling, so the matrix
+\texttt{M} is actually a simple matrix (with rank = 1 \ldots{} more on
+that below).
+
+This application comes up when we use techniques dimensionality
+reduction techniques like PCA, and wish to get a \emph{reconstruction}
+of our original data using some (or all) of the principal components.
+The idea is that we can decompose our data matrices into a bunch of
+``simple'' factors and reconstruct the data by performing outer products
+using the factors and summing the result.
+
+    \hypertarget{matrix-rank}{%
+\subsubsection{1.3: Matrix rank }\label{matrix-rank}}
+
+As an explicit example of the above, lets demonstrate how we can build a
+rather complex looking dataset using just a few simple functions and
+some outer products. This is a toy example that demonstrates the way one
+may reconstruct data from principal components etc.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} \PY{c}{\PYZsh{} build our functions}
+        \PY{n}{f1}\PY{p}{(}\PY{n}{x}\PY{p}{)} \PY{o}{=} \PY{n}{sin}\PY{o}{.}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+        \PY{n}{f2}\PY{p}{(}\PY{n}{x}\PY{p}{)} \PY{o}{=} \PY{n}{cos}\PY{o}{.}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+        \PY{n}{f3}\PY{p}{(}\PY{n}{x}\PY{p}{)} \PY{o}{=} \PY{o}{\PYZhy{}}\PY{l+m+mf}{0.5}\PY{n}{x} \PY{o}{+} \PY{n}{x}\PY{o}{.\PYZca{}}\PY{l+m+mf}{0.5}
+        
+        \PY{c}{\PYZsh{} create our \PYZdq{}true\PYZdq{} simple functions. Each one may, for instance, represent a discovered}
+        \PY{c}{\PYZsh{} \PYZdq{}factor\PYZdq{} from a dataset that expalains a good amount of variability in the data (a la PCA)}
+        \PY{n}{x} \PY{o}{=} \PY{n}{range}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{stop}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{length}\PY{o}{=}\PY{l+m+mi}{100}\PY{p}{)}
+        \PY{n}{factors} \PY{o}{=} \PY{p}{[}\PY{n}{f1}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{,} \PY{n}{f2}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{,} \PY{n}{f3}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{]} \PY{c}{\PYZsh{} 100 x 3 matrix}
+        
+        \PY{c}{\PYZsh{} create our \PYZdq{}weights\PYZdq{}, which determine how we the simple functions}
+        \PY{c}{\PYZsh{} are scaled for each of our \PYZdq{}measurements\PYZdq{} that we made}
+        \PY{n}{weights} \PY{o}{=} \PY{n}{rand}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{)} \PY{c}{\PYZsh{} each factor will be scaled randomly 10 times; the 10 here could represent 10 different measurements or cells or something}
+        
+        \PY{c}{\PYZsh{} produce the full, observed dataset by scaling the factors with the weights}
+        \PY{n}{data} \PY{o}{=} \PY{n}{factors} \PY{o}{*} \PY{n}{weights}\PY{o}{\PYZsq{}}
+        \PY{n}{p1} \PY{o}{=} \PY{n}{plot}\PY{p}{(}\PY{n}{factors}\PY{p}{,} \PY{n}{title}\PY{o}{=}\PY{l+s}{\PYZdq{}}\PY{l+s}{t}\PY{l+s}{r}\PY{l+s}{u}\PY{l+s}{e}\PY{l+s}{ }\PY{l+s}{f}\PY{l+s}{a}\PY{l+s}{c}\PY{l+s}{t}\PY{l+s}{o}\PY{l+s}{r}\PY{l+s}{s}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+        \PY{n}{p2} \PY{o}{=} \PY{n}{heatmap}\PY{p}{(}\PY{n}{weights}\PY{p}{,} \PY{n}{title}\PY{o}{=}\PY{l+s}{\PYZdq{}}\PY{l+s}{w}\PY{l+s}{e}\PY{l+s}{i}\PY{l+s}{g}\PY{l+s}{h}\PY{l+s}{t}\PY{l+s}{ }\PY{l+s}{m}\PY{l+s}{a}\PY{l+s}{t}\PY{l+s}{r}\PY{l+s}{i}\PY{l+s}{x}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+        \PY{n}{p3} \PY{o}{=} \PY{n}{heatmap}\PY{p}{(}\PY{n}{data}\PY{p}{,} \PY{n}{title}\PY{o}{=}\PY{l+s}{\PYZdq{}}\PY{l+s}{o}\PY{l+s}{b}\PY{l+s}{s}\PY{l+s}{e}\PY{l+s}{r}\PY{l+s}{v}\PY{l+s}{e}\PY{l+s}{d}\PY{l+s}{ }\PY{l+s}{d}\PY{l+s}{a}\PY{l+s}{t}\PY{l+s}{a}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+        \PY{n}{plot}\PY{p}{(}\PY{n}{p1}\PY{p}{,} \PY{n}{p2}\PY{p}{,} \PY{n}{p3}\PY{p}{,} \PY{n}{layout} \PY{o}{=} \PY{n+nd}{@layout} \PY{p}{[}\PY{n}{a} \PY{n}{b}\PY{p}{;} \PY{n}{c}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+
+
+    What we have done above is taken an \emph{inner product} of our true
+factors with a weighting matrix. However, we can break this done as a
+\emph{sum of outer products}, where each factor gets called randomly
+using an out product, then the resulting matrices are all summed
+together:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} \PY{n}{data\PYZus{}1} \PY{o}{=} \PY{n}{factors}\PY{p}{[}\PY{o}{:}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{*} \PY{n}{weights}\PY{p}{[}\PY{o}{:}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{\PYZsq{}} \PY{c}{\PYZsh{} outer product of factor 1 with weights for factor 1}
+        \PY{n}{data\PYZus{}2} \PY{o}{=} \PY{n}{factors}\PY{p}{[}\PY{o}{:}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{]} \PY{o}{*} \PY{n}{weights}\PY{p}{[}\PY{o}{:}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{]}\PY{o}{\PYZsq{}} \PY{c}{\PYZsh{} ditto, for factor 2}
+        \PY{n}{data\PYZus{}3} \PY{o}{=} \PY{n}{factors}\PY{p}{[}\PY{o}{:}\PY{p}{,}\PY{l+m+mi}{3}\PY{p}{]} \PY{o}{*} \PY{n}{weights}\PY{p}{[}\PY{o}{:}\PY{p}{,}\PY{l+m+mi}{3}\PY{p}{]}\PY{o}{\PYZsq{}} \PY{c}{\PYZsh{} ditto, for factor 3}
+        \PY{n}{data\PYZus{}outer} \PY{o}{=} \PY{n}{data\PYZus{}1} \PY{o}{+} \PY{n}{data\PYZus{}2} \PY{o}{+} \PY{n}{data\PYZus{}3}
+        
+        \PY{n}{p1} \PY{o}{=} \PY{n}{heatmap}\PY{p}{(}\PY{n}{data\PYZus{}1}\PY{p}{,} \PY{n}{title}\PY{o}{=}\PY{l+s}{\PYZdq{}}\PY{l+s}{f}\PY{l+s}{a}\PY{l+s}{c}\PY{l+s}{t}\PY{l+s}{o}\PY{l+s}{r}\PY{l+s}{ }\PY{l+s}{1}\PY{l+s}{ }\PY{l+s}{m}\PY{l+s}{a}\PY{l+s}{t}\PY{l+s}{r}\PY{l+s}{i}\PY{l+s}{x}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+        \PY{n}{p2} \PY{o}{=} \PY{n}{heatmap}\PY{p}{(}\PY{n}{data\PYZus{}2}\PY{p}{,} \PY{n}{title}\PY{o}{=}\PY{l+s}{\PYZdq{}}\PY{l+s}{f}\PY{l+s}{a}\PY{l+s}{c}\PY{l+s}{t}\PY{l+s}{o}\PY{l+s}{r}\PY{l+s}{ }\PY{l+s}{2}\PY{l+s}{ }\PY{l+s}{m}\PY{l+s}{a}\PY{l+s}{t}\PY{l+s}{r}\PY{l+s}{i}\PY{l+s}{x}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+        \PY{n}{p3} \PY{o}{=} \PY{n}{heatmap}\PY{p}{(}\PY{n}{data\PYZus{}3}\PY{p}{,} \PY{n}{title}\PY{o}{=}\PY{l+s}{\PYZdq{}}\PY{l+s}{f}\PY{l+s}{a}\PY{l+s}{c}\PY{l+s}{t}\PY{l+s}{o}\PY{l+s}{r}\PY{l+s}{ }\PY{l+s}{3}\PY{l+s}{ }\PY{l+s}{m}\PY{l+s}{a}\PY{l+s}{t}\PY{l+s}{r}\PY{l+s}{i}\PY{l+s}{x}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+        \PY{n}{p4} \PY{o}{=} \PY{n}{heatmap}\PY{p}{(}\PY{n}{data\PYZus{}outer}\PY{p}{,} \PY{n}{title}\PY{o}{=}\PY{l+s}{\PYZdq{}}\PY{l+s}{o}\PY{l+s}{b}\PY{l+s}{s}\PY{l+s}{e}\PY{l+s}{r}\PY{l+s}{v}\PY{l+s}{e}\PY{l+s}{d}\PY{l+s}{ }\PY{l+s}{d}\PY{l+s}{a}\PY{l+s}{t}\PY{l+s}{a}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+        \PY{n}{plot}\PY{p}{(}\PY{n}{p1}\PY{p}{,} \PY{n}{p2}\PY{p}{,} \PY{n}{p3}\PY{p}{,} \PY{n}{p4}\PY{p}{,} \PY{n}{layout} \PY{o}{=} \PY{n+nd}{@layout} \PY{p}{[}\PY{n}{a} \PY{n}{b} \PY{n}{c}\PY{p}{;} \PY{n}{d}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+
+
+    So as you can see from above, performing an outer product for each
+factor with its weight vector and summing the result is equivalent to
+taking a weighted linear combination for each element across the
+factors. The former is just a longer way of doing the latter.
+Ultimately, both produce a rather complicated looking matrix, while in
+reality it is simply composed of three simple functions that have been
+scaled slightly differently across ``measurements'' and summed together.
+The benefit of the more explicit outer-product-summation based method is
+that we can observe what each factor matrix looks like and see that in
+reality it is just a repeat of a simple function.
+
+The three factor matrices above all have a \emph{rank} equal to
+\textbf{1}. The \emph{rank} of a matrix tells us how many
+\emph{independent columns} it contains. Independence here means that, if
+we imagine each column representing some vector pointing in some
+direction, independent vectors (columns) are those that make up a unique
+(hyper)plane. So all of our factor matrices above have rank 1 because
+the columns are all simply scaled versions of one another. So, in vector
+space, all the vectors (columns) are lying on top of one another
+(pointing in the same direction).
+
+In contrast, our final observed matrix \texttt{data} has \emph{rank}
+equal to \textbf{3}, because it is composed of three independent
+factors. However, if we had instead made one of the factors simply a
+copy (maybe scaled) of one of the other factors, then we would have
+reduced the rank of \texttt{data} to \textbf{2}. The point of many
+dimensionality reduction techniques is to find a \emph{low-rank}
+approximation to a dataset under the assumption that the original data
+may have high rank due to \emph{noise}.
+
+    \hypertarget{vector-and-matrix-norms}{%
+\subsubsection{1.2: Vector and matrix norms
+}\label{vector-and-matrix-norms}}
+
+Finally
 
     \hypertarget{signal-processing}{%
-\subsection{Signal Processing }\label{signal-processing}}
+\section{Signal Processing }\label{signal-processing}}
 
 
     % Add a bibliography block to the postdoc
