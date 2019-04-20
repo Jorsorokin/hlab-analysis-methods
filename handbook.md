@@ -1,13 +1,17 @@
 
-#### Hlab analysis methods PDF summary
+# Hlab analysis methods PDF summary
 Welcome! This rather lengthy document summarizes the various topics we will/have covered in the HLab analysis mini series. If this is the .ipynb version of the doc, you can edit/run blocks of code yourself. 
 
 ## Table of contents
 0. [Basic Setup](#basics)
 1. [Linear Algbera](#linalg)
+    - [Inner Product](#inner)
+    - [Outer Product](#outer)
+    - [Vector Norms](#norm)
+    - [Matrix Rank](#rank)
 2. [Signal Processing](#sigproc)
 
-### Basic Setup <a name="basics"></a>
+## Basic Setup <a name="basics"></a>
 If you are new to Julia, fear not, it is quite similar to MATLAB. There are, however a few peculiarities to take care of. First, in Julia we need to *import* packages to use certain functions. For instance, there are no built-in plotting functions, but there is a handy _Plots_ package that we can install and use. In general, to increase the flexibility of Julia we first need to (a) install desired packages, and (b) import them when we wish to use them. 
 
 For the most part, Julia code will look very familiar if you have learned Python and/or MATLAB (it uses the best of both worlds: MATLAB's intuitive linear algebra framework with Python's general-purposeness & modularity). Plotting is a bit different, as are some of the data structures (for instance, a row-vector does not behave the same as a column-vector, but we'll get into that next)
@@ -39,7 +43,7 @@ print([Statistics.mean(x), Statistics.std(x)])
 
     [-0.00331494, 1.05387]
 
-### Linear Algebra <a name="linalg"></a>
+## Linear Algebra <a name="linalg"></a>
 Linear algbera is at the core of most (if not all) of the analysis methods we will be covering. As such, knowing even a very surface-level amount of linear algebra can be extremely rewarding/beneficial when creating your analysis pipelines.
 
 Let's begin by creating a simple *vector* in Julia, which is defined as a column-vector by default:
@@ -60,7 +64,7 @@ print(x .* y) # element-wise multiplication
 print(x' * y) # dot-product: x[1]*y[1] + ... + x[5]*y[5]
 ```
 
-# The inner product
+### The inner product <a name="inner"></a>
 Note that the last operation `x' * y` performed _vector-multiplication_ between the vectors `x` and `y`. This is also called the *dot product* or *inner product* between two vectors (or matrices). Note that I had to transpose the vector `x` first for this to work. I also could have imported the `LinearAlgebra` package and used the function `LinearAlgebra.dot(x, y)`. 
 
 We can write our own dot-product function to clarify what it is doing:
@@ -109,10 +113,20 @@ As you can see above, we have used the inner product in a _rotation/transformati
 ```
 Each _row_ of `A` is associated with one dimension/feature/variable of the _input_ data, while each _column_ of `A` is associated with one dimension/feature/variable of the _ouput_ data. Since we have two columns in `data`, and two columns in `A`, we already know that this inner product is NOT going to change the dimensionality of the data. We started with two variables (x, y), and we will be ending with two variables (x_new, y_new). 
 
+
 Looking at the _columns_ of A, we see that the first column, `[1, 0]`, will be multiplying the _first_ variable in `data` (x) by the value *1*, and the _second_ variable in `data` (y) by the value *0*, then adding the results together to produce `x_new`. Since we are not combining x and y together (since y is multiplied by 0), and since we are only multiplying x by 1, we know that `x_new = x`. 
 
 Similarly, the second column of A, `[0, -1]`, will be multiplying x by *0*, and y by *-1*, then summing the results to produce `y_new`. Since the only contribution to `y_new` is the original `y` variable in `data`, and it is only multiplied by *-1*, we know that `y_new = -y`.
 
+
 So in general, each _column_ of A specifies how the input variables get weighted before being summed together to produce a new, single, ouput variable. So each column of A is performing a _linear combination_ of the input variables. We can also readily appreciate how we can easily shrink or expand the original dimensionality of the data set (by removing or adding columns to `A`, respectively). 
 
-### Signal Processing <a name="sigproc"></a>
+### The outer product <a name="outer"></a>
+
+
+### Vector and matrix norms <a name="norm"></a>
+
+
+### Matrix rank <a name="rank"></a>
+
+## Signal Processing <a name="sigproc"></a>
