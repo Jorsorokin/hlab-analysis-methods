@@ -286,7 +286,10 @@ handbook}\label{hlab-analysis-methods-handbook}}
 
 Welcome! This rather lengthy document summarizes the various topics we
 will/have covered in the HLab analysis mini series. If this is the
-.ipynb version of the doc, you can edit/run blocks of code yourself.
+.ipynb version of the doc, you can edit/run blocks of code yourself
+(assuming you have Julia and the necessary packages installed).
+Otherwise, you can open a new Julia session and follow along with the
+code examples below
 
     \hypertarget{table-of-contents}{%
 \subsection{Table of contents}\label{table-of-contents}}
@@ -298,14 +301,14 @@ will/have covered in the HLab analysis mini series. If this is the
 \item
   Section \ref{basics}
 \item
-  Section \ref{linalg} 1.1 Section \ref{inner} 1.2 Section \ref{outer}
-  1.3 Section \ref{norm} 1.4 Section \ref{rank}
+  Section \ref{linalg} 1.1 Section \ref{norm} 1.2 Section \ref{inner}
+  1.3 Section \ref{outer} 1.4 Section \ref{rank}
 \item
   Section \ref{sigproc}
 \end{enumerate}
 
     \hypertarget{basic-setup}{%
-\section{0: Basic Setup }\label{basic-setup}}
+\section{0 Basic Setup }\label{basic-setup}}
 
 If you are new to Julia, fear not, it is quite similar to MATLAB. There
 are, however a few peculiarities to take care of. First, in Julia we
@@ -365,7 +368,7 @@ cleaner.
     \end{Verbatim}
 
     \hypertarget{linear-algebra}{%
-\section{1: Linear Algebra }\label{linear-algebra}}
+\section{1 Linear Algebra }\label{linear-algebra}}
 
 Linear algbera is at the core of most (if not all) of the analysis
 methods we will be covering. As such, knowing even a very surface-level
@@ -391,12 +394,11 @@ length, or multiply by another vector or matrix.
 {\color{incolor}In [{\color{incolor} }]:} \PY{n}{y} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{]}
         \PY{n}{print}\PY{p}{(}\PY{l+m+mi}{2}\PY{n}{x}\PY{p}{)} \PY{c}{\PYZsh{} multiply each element by 2}
         \PY{n}{print}\PY{p}{(}\PY{n}{x} \PY{o}{.*} \PY{n}{y}\PY{p}{)} \PY{c}{\PYZsh{} element\PYZhy{}wise multiplication}
-        \PY{n}{print}\PY{p}{(}\PY{n}{x}\PY{o}{\PYZsq{}} \PY{o}{*} \PY{n}{y}\PY{p}{)} \PY{c}{\PYZsh{} dot\PYZhy{}product: x[1]*y[1] + ... + x[5]*y[5]}
 \end{Verbatim}
 
 
     \hypertarget{vector-and-matrix-norms}{%
-\subsubsection{1.1: Vector and matrix norms
+\subsubsection{1.1 Vector and matrix norms
 }\label{vector-and-matrix-norms}}
 
 We can make some measurements on vectors and matrices that can come in
@@ -407,15 +409,39 @@ for regression problems.
 The \emph{norm} of a vector is defined as:
 \[\left|\left|v\right|\right|^{p} = \sum{v_i^p}\]
 
-    \hypertarget{the-inner-product}{%
-\subsubsection{1.1: The inner product }\label{the-inner-product}}
+So the \emph{2-norm} of a vector is the \emph{sum-of-squares} (because p
+-\textgreater{} 2). The norm of a matrix is the same thing except that
+we sum elements over both rows and columns.
 
-Note that the last operation \texttt{x\textquotesingle{}\ *\ y}
-performed \emph{vector-multiplication} between the vectors \texttt{x}
-and \texttt{y}. This is also called the \emph{dot product} or
-\emph{inner product} between two vectors (or matrices). Note that I had
-to transpose the vector \texttt{x} first for this to work. I also could
-have imported the \texttt{LinearAlgebra} package and used the function
+Norms come in handy for scaling data (divide each vector by its norm),
+which can improve clustering/dimensionality reduction techniques since
+all variables (column of a matrix) become similar in magnitude, and thus
+no single variable dominates the clustering/dimensionality reduction
+solution. Moreover, the \emph{2-norm} (also called the \emph{L2 norm})
+is used in regression. The term \emph{least squares} comes directly from
+trying to minimize the \emph{L2 norm} of the residuals following a
+regression fit (i.e.~minimize the \emph{sum of squares} of the errors).
+
+    \hypertarget{the-inner-product}{%
+\subsubsection{1.2 The inner product }\label{the-inner-product}}
+
+We can think of the \emph{L2 norm} as an \emph{inner product} (or
+\emph{dot product}) of a vector with itself. An inner product between
+vectors \texttt{x} and \texttt{y} is defined as the sum of element-wise
+products.
+
+For instance, given vectors \texttt{x} and \texttt{y}, the dot product
+is:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x' * y}
+\end{Highlighting}
+\end{Shaded}
+
+From above, you can see that I had to transpose the vector \texttt{x}
+first for this to work. I also could have imported the
+\texttt{LinearAlgebra} package and used the function
 \texttt{LinearAlgebra.dot(x,\ y)}.
 
 We can write our own dot-product function to clarify what it is doing:
@@ -531,7 +557,7 @@ dimensionality of the data set (by removing or adding columns to
 \texttt{A}, respectively).
 
     \hypertarget{the-outer-product}{%
-\subsubsection{1.2: The outer product }\label{the-outer-product}}
+\subsubsection{1.3 The outer product }\label{the-outer-product}}
 
 Unlike the inner product, which typically reduces the \# of elements
 (for instance, from two vectors -\textgreater{} scalar), the outer
@@ -563,19 +589,19 @@ It is easer to understand this operation with a quick example:
     As you can see, each column in \texttt{M} is simply \texttt{x} that has
 been scaled according to the corresponding element in \texttt{w}. Even
 though we have 5 columns in \texttt{M}, really each column can be
-represented as the originally sine wave with a scaling, so the matrix
-\texttt{M} is actually a simple matrix (with rank = 1 \ldots{} more on
-that below).
+represented as the original sine wave with a scaling, so that the matrix
+\texttt{M} is actually a very simple matrix (with \texttt{rank\ =\ 1}
+\ldots{} more on that below).
 
-This application comes up when we use techniques dimensionality
-reduction techniques like PCA, and wish to get a \emph{reconstruction}
-of our original data using some (or all) of the principal components.
-The idea is that we can decompose our data matrices into a bunch of
-``simple'' factors and reconstruct the data by performing outer products
-using the factors and summing the result.
+This application comes up when we use dimensionality reduction
+techniques like PCA, and wish to get a \emph{reconstruction} of our
+original data using some (or all) of the principal components. The idea
+is that we can decompose our data matrices into a bunch of ``simple''
+factors and reconstruct the data by performing outer products using the
+factors and summing the result.
 
     \hypertarget{matrix-rank}{%
-\subsubsection{1.3: Matrix rank }\label{matrix-rank}}
+\subsubsection{1.4 Matrix rank }\label{matrix-rank}}
 
 As an explicit example of the above, lets demonstrate how we can build a
 rather complex looking dataset using just a few simple functions and
@@ -655,12 +681,6 @@ reduced the rank of \texttt{data} to \textbf{2}. The point of many
 dimensionality reduction techniques is to find a \emph{low-rank}
 approximation to a dataset under the assumption that the original data
 may have high rank due to \emph{noise}.
-
-    \hypertarget{vector-and-matrix-norms}{%
-\subsubsection{1.2: Vector and matrix norms
-}\label{vector-and-matrix-norms}}
-
-Finally
 
     \hypertarget{signal-processing}{%
 \section{Signal Processing }\label{signal-processing}}
