@@ -4,10 +4,10 @@ Welcome! This rather lengthy document summarizes the various topics we will/have
 
 ## Table of contents
 0. [Basic Setup](#basics)
-1. [Linear Algbera](#linalg)
-    1.1 [Vector Norms](#norm)
-    1.2 [Inner Product](#inner)
-    1.3 [Outer Product](#outer)
+1. [Linear Algbera](#linalg)</br>
+    1.1 [Vector Norms](#norm)</br>
+    1.2 [Inner Product](#inner)</br>
+    1.3 [Outer Product](#outer)</br>
     1.4 [Matrix Rank](#rank)
 2. [Signal Processing](#sigproc)
 
