@@ -27,7 +27,6 @@ function plot_fourier(x, fs, xlim=NaN)
     N = Int(floor(length(x)/2))
     dt = 1/fs
     t = range(dt, stop=N*2*dt, step=dt)
-    #F = fourier(x)
     F = DSP.fft(x)
     frequencies = LinRange(0, fs/2, N+1)
 
